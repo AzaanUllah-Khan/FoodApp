@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Color } from "../constants/theme"
@@ -14,17 +14,20 @@ function Auth({ navigation }) {
         auth()
             .createUserWithEmailAndPassword(email, password)
             .then(() => {
+                const userUid = auth().currentUser.uid;
                 firestore()
                     .collection('Users')
-                    .doc(auth().currentUser.uid)
+                    .doc(userUid)
                     .set({
                         name: name,
-                        email: email
+                        email: email,
+                        uid: userUid
                     })
                     .then(() => {
                         console.log('User added!');
                     });
                 console.log('User account created & signed in!');
+                navigation.navigate('HomeStack')
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
@@ -49,24 +52,6 @@ function Auth({ navigation }) {
                 console.error(error);
             });
     }
-    const [initializing, setInitializing] = useState(true);
-    const [user, setUser] = useState();
-
-    function onAuthStateChanged(user) {
-        setUser(user);
-        if (initializing) setInitializing(false);
-    }
-
-    useEffect(() => {
-        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-        return subscriber;
-    }, []);
-
-    if (initializing) return null;
-
-    if (user) {
-        navigation.navigate('HomeStack')
-      }
     return (
         <SafeAreaView style={styles.bg}>
             <ScrollView>

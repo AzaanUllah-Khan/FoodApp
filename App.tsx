@@ -1,6 +1,5 @@
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import MainNavigator from "./src/navigation";
+import MainNavigator, { MyTabs } from "./src/navigation";
 
 function App(){
   return(
