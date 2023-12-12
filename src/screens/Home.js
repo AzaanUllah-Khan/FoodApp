@@ -6,25 +6,27 @@ import { Alert } from 'react-native';
 import axios from "axios";
 import auth from '@react-native-firebase/auth'
 
-function Home({navigation}) {
-    const [data, setData] = useState({})
+function Home({ navigation }) {
+    const [data, setData] = useState([])
     useEffect(() => {
         axios.get('https://www.themealdb.com/api/json/v1/1/search.php?s').then((response) => {
-            setData(response.data);
+            setData(response.data.meals);
         });
     }, []);
     useEffect(() => {
-        console.log("Data has changed:", data);
+        console.log("Data has changed:", data.meals);
     }, [data]);
 
     function signOut() {
         auth()
             .signOut()
             .then(() => {
-                Alert.alert("Sign out","User Signed Out Successfuly")
-                console.log('User signed out!') 
-                navigation.navigate('Splash')
-        });
+                Alert.alert("Sign out", "User Signed Out Successfuly")
+                    .then(() => {
+                        navigation.navigate('Splash')
+                    })
+                console.log('User signed out!')
+            });
     }
     return (
         <SafeAreaView style={styles.container}>
@@ -38,7 +40,7 @@ function Home({navigation}) {
                 <TextInput placeholder="Search" style={styles.input} />
             </View>
             <View style={{ width: "100%", marginTop: 25 }}>
-                <ScrollView horizontal={true} style={{ width: "100%", marginLeft: 15 }}>
+                <ScrollView horizontal={true} showsVerticalScrollIndicator={false} style={{ width: "100%", marginLeft: 15 }}>
                     <Text style={[styles.scrollText, styles.activeText]}>Food</Text>
                     <Text style={styles.scrollText}>Drinks</Text>
                     <Text style={styles.scrollText}>Snacks</Text>
@@ -46,6 +48,21 @@ function Home({navigation}) {
                     <Text style={styles.scrollText}>BBQ</Text>
                     <Text style={styles.scrollText}>Party</Text>
                     <Text style={styles.scrollText}>Cake</Text>
+                </ScrollView>
+            </View>
+            <View style={{ width: "100%", marginTop: 100}}>
+                <Text style={styles.seeMore} onPress={()=>{navigation.navigate('All')}}>See More</Text>
+                <ScrollView horizontal={true} showsVerticalScrollIndicator={false}>
+                    {
+                        data.slice(0,5).map((meal) => (
+                            <View style={styles.strCover} key={meal.idMeal}>
+                                <Image style={styles.strImg} source={{ uri: meal.strMealThumb }} />
+                                <Text style={styles.strTxt}>{meal.strMeal}</Text>
+                                <Text style={styles.strId}>N {meal.idMeal}</Text>
+                            </View>
+                        ))
+
+                    }
                 </ScrollView>
             </View>
         </SafeAreaView>
@@ -108,6 +125,42 @@ const styles = StyleSheet.create({
         color: Color.primary,
         borderBottomWidth: 1,
         borderBottomColor: Color.primary
+    },
+    strCover: {
+        backgroundColor: Color.white,
+        display: "flex",
+        alignItems: "center",
+        width: 180,
+        padding: 30,
+        borderRadius: 20,
+        position: "relative",
+        height: 190,
+        overflow: "visible",
+        marginRight:40
+    },
+    strImg: {
+        width: 110,
+        height: 110,
+        objectFit: "cover",
+        borderRadius: 50,
+        position: "absolute",
+        top: -50,
+    },
+    strTxt: {
+        fontSize: 26,
+        fontWeight: "bold",
+        textAlign: "center",
+        color: Color.black,
+        marginTop: 60
+    },
+    strId: {
+        marginTop: 15,
+        color: Color.primary
+    },
+    seeMore:{
+        color:Color.primary,
+        marginBottom:5,
+        textAlign:"right"
     }
 })
 export default Home;
