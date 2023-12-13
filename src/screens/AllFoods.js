@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View, ScrollView } from "react-native";
+import { Image, StyleSheet, Text, View, ScrollView, Button, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Color } from "../constants/theme";
 import axios from "axios";
+
 function AllFoods(){
     const [data, setData] = useState([])
     useEffect(() => {
@@ -24,6 +25,9 @@ function AllFoods(){
                                 <Image style={styles.strImg} source={{ uri: meal.strMealThumb }} />
                                 <Text style={styles.strTxt}>{meal.strMeal}</Text>
                                 <Text style={styles.strId}>N {meal.idMeal}</Text>
+                                <TouchableOpacity style={{marginTop:10,borderRadius:30,backgroundColor:Color.primary,padding:7,width:"100%",alignItems:"center"}}>
+                                    <Text style={{fontSize:16,color:Color.white}}>Oder</Text>
+                                </TouchableOpacity>
                             </View>
                         ))
 
@@ -45,10 +49,11 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         width: 270,
-        padding: 30,
+        paddingTop:30,
+        paddingBottom:20,
+        paddingHorizontal: 30,
         borderRadius: 20,
         position: "relative",
-        height: 210,
         overflow: "visible",
         marginBottom:90,
     },

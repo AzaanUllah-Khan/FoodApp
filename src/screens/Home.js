@@ -34,7 +34,7 @@ function Home({ navigation }) {
                 <Image source={require('../assets/icons/hamburger.png')} style={styles.hamburger} />
                 <Image source={require('../assets/icons/cartIcon.png')} style={styles.cartIcon} />
             </View>
-            <Text style={styles.heading} onPress={() => { signOut() }}>Delicious{"\n"}Food For You</Text>
+            <Text style={styles.heading} onPress={() => { navigation.navigate('Profile') }}>Delicious{"\n"}Food For You</Text>
             <View style={styles.inputCover}>
                 <Image style={styles.searchIcon} source={require('../assets/icons/searchIcon.png')} />
                 <TextInput placeholder="Search" style={styles.input} />
@@ -50,7 +50,7 @@ function Home({ navigation }) {
                     <Text style={styles.scrollText}>Cake</Text>
                 </ScrollView>
             </View>
-            <View style={{ width: "100%", marginTop: 100}}>
+            <View style={{ width: "100%", marginTop: 70}}>
                 <Text style={styles.seeMore} onPress={()=>{navigation.navigate('All')}}>See More</Text>
                 <ScrollView horizontal={true} showsVerticalScrollIndicator={false}>
                     {
@@ -133,18 +133,17 @@ const styles = StyleSheet.create({
         width: 180,
         padding: 30,
         borderRadius: 20,
-        position: "relative",
         height: 190,
         overflow: "visible",
-        marginRight:40
+        marginRight:30
     },
     strImg: {
-        width: 110,
-        height: 110,
+        width: 120,
+        height: 120,
         objectFit: "cover",
         borderRadius: 50,
         position: "absolute",
-        top: -50,
+        top: -50
     },
     strTxt: {
         fontSize: 26,
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     },
     seeMore:{
         color:Color.primary,
-        marginBottom:5,
+        marginBottom:7,
         textAlign:"right"
     }
 })
