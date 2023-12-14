@@ -10,6 +10,8 @@ function Auth({ navigation }) {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [address, setAddress] = useState("")
+    const [phone, setPhone] = useState("")
     function createUser() {
         auth()
             .createUserWithEmailAndPassword(email, password)
@@ -21,6 +23,8 @@ function Auth({ navigation }) {
                     .set({
                         name: name,
                         email: email,
+                        address:address,
+                        number:phone,
                         uid: userUid
                     })
                     .then(() => {
@@ -67,6 +71,10 @@ function Auth({ navigation }) {
                         {option == 'Sign Up' ? <View>
                             <Text style={styles.txt}>Name</Text>
                             <TextInput style={styles.input} onChangeText={(text) => { setName(text) }} />
+                            <Text style={styles.txt}>Phone Number</Text>
+                            <TextInput style={styles.input} onChangeText={(text) => { setPhone(text) }} />
+                            <Text style={styles.txt}>Address</Text>
+                            <TextInput style={styles.input} onChangeText={(text) => { setAddress(text) }} />
                         </View> : ''}
                         <View>
                             <Text style={styles.txt}>Email Address</Text>

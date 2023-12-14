@@ -1,35 +1,76 @@
-import React,{useState} from "react";
+import React, { useState,useEffect } from "react";
 import { Text, TextInput, View, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Color } from "../constants/theme";
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth'
 import ImagePicker from "react-native-image-picker"
 function ChangeDetail() {
     const [imageSource, setImageSource] = useState(null);
+    const [name, changeName] = useState('')
+    const [phone, changePhone] = useState('')
+    const [address, changeAddress] = useState('')
 
-  const pickImage = () => {
-    ImagePicker.showImagePicker({ title: 'Select Image' }, (response) => {
-        if (!response.didCancel && !response.error) {
-          setImageSource({ uri: response.uri });
-        }
-      });      
-  };
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const userId = auth().currentUser.uid;
+                const userDoc = await firestore().collection('Users').doc(userId).get();
+
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    setUserData(userData);
+                } else {
+                    console.error("User not found");
+                }
+            } catch (error) {
+                console.error("Error fetching current user: ", error);
+            }
+        };
+
+        fetchCurrentUser();
+    }, [auth().currentUser.uid]);
+
+    const pickImage = () => {
+        ImagePicker.showImagePicker({ title: 'Select Image' }, (response) => {
+            if (!response.didCancel && !response.error) {
+                setImageSource({ uri: response.uri });
+            }
+        });
+    };
+
+    const uid = auth().currentUser.uid
+
+    function Update() {
+        firestore()
+            .collection('Users')
+            .doc(uid)
+            .update({
+                name: "Babar Azam",
+            })
+            .then(() => {
+                console.log('User updated!');
+            });
+    }
     return (
         <SafeAreaView style={styles.container}>
             {imageSource && (
-        <Image source={imageSource} style={{ width: 200, height: 200 }} />
-      )}
+                <Image source={imageSource} style={{ width: 200, height: 200 }} />
+            )}
             <Text style={styles.heading}>Information</Text>
-            <View style={styles.detailContainer}>
+            {userData && <View style={styles.detailContainer}>
                 <Text style={styles.labels}>Profile Image</Text>
-                <Button title="SD" onPress={()=>{pickImage()}}/>
+                <Button title="SD" onPress={() => { pickImage() }} />
                 <Text style={styles.labels}>Name</Text>
-                <TextInput style={styles.input} />
+                <TextInput style={styles.input} value={userData.name} />
                 <Text style={styles.labels}>Phone Number</Text>
-                <TextInput style={styles.input} />
+                <TextInput style={styles.input} value={userData.number}/>
                 <Text style={styles.labels}>Address</Text>
-                <TextInput style={styles.input} />
-            </View>
-            <TouchableOpacity style={styles.button}>
+                <TextInput style={styles.input} value={userData.address}/>
+            </View>}
+            <TouchableOpacity style={styles.button} onPress={() => { Update() }}>
                 <Text style={styles.buttonTxt}>Update</Text>
             </TouchableOpacity>
         </SafeAreaView>
