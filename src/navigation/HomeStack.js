@@ -4,6 +4,7 @@ import Home from '../screens/Home';
 import User from '../screens/User';
 import AllFoods from '../screens/AllFoods';
 import ChangeDetail from '../screens/ChangeDetail';
+import History from '../screens/History'
 
 const Stack = createNativeStackNavigator()
 
@@ -14,6 +15,7 @@ export default function HomeStack() {
             <Stack.Screen name='Profile' component={User}/>
             <Stack.Screen name='All' component={AllFoods} options={{headerShown:true}}/>
             <Stack.Screen name='Update Details' component={ChangeDetail} options={{headerShown:true}}/>
+            <Stack.Screen name='History' component={History} options={{headerShown:true}}/>
         </Stack.Navigator>
   );
 }

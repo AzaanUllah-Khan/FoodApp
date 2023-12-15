@@ -1,15 +1,18 @@
-import React, { useState,useEffect } from "react";
-import { Text, TextInput, View, TouchableOpacity, StyleSheet, Button } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, TextInput, View, TouchableOpacity, StyleSheet, Button, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Color } from "../constants/theme";
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth'
 import ImagePicker from "react-native-image-picker"
+import storage from '@react-native-firebase/storage';
+
 function ChangeDetail() {
     const [imageSource, setImageSource] = useState(null);
-    const [name, changeName] = useState('')
-    const [phone, changePhone] = useState('')
-    const [address, changeAddress] = useState('')
+    const [name, changeName] = useState(userData ? userData.name : '');
+    const [phone, changePhone] = useState(userData ? userData.number : '');
+    const [address, changeAddress] = useState(userData ? userData.address : '');
+
 
     const [userData, setUserData] = useState(null);
 
@@ -33,10 +36,14 @@ function ChangeDetail() {
         fetchCurrentUser();
     }, [auth().currentUser.uid]);
 
+    const reference = storage().ref(auth().currentUser.email);
+
     const pickImage = () => {
-        ImagePicker.showImagePicker({ title: 'Select Image' }, (response) => {
+        ImagePicker.showImagePicker({ title: 'Select Image' }, async (response) => {
             if (!response.didCancel && !response.error) {
                 setImageSource({ uri: response.uri });
+                const pathToFile = `${auth().currentUser.email}/${response.uri}`;
+                await reference.putFile(pathToFile);
             }
         });
     };
@@ -48,10 +55,15 @@ function ChangeDetail() {
             .collection('Users')
             .doc(uid)
             .update({
-                name: "Babar Azam",
+                name: name,
+                number: phone,
+                address: address,
             })
             .then(() => {
                 console.log('User updated!');
+            })
+            .catch(error => {
+                console.error('Error updating user:', error);
             });
     }
     return (
@@ -64,11 +76,11 @@ function ChangeDetail() {
                 <Text style={styles.labels}>Profile Image</Text>
                 <Button title="SD" onPress={() => { pickImage() }} />
                 <Text style={styles.labels}>Name</Text>
-                <TextInput style={styles.input} value={userData.name} />
+                <TextInput style={styles.input} value={userData.name} onChangeText={(text) => { changeName(text) }} />
                 <Text style={styles.labels}>Phone Number</Text>
-                <TextInput style={styles.input} value={userData.number}/>
+                <TextInput style={styles.input} value={userData.number} onChangeText={(text) => { changePhone(text) }} />
                 <Text style={styles.labels}>Address</Text>
-                <TextInput style={styles.input} value={userData.address}/>
+                <TextInput style={styles.input} value={userData.address} onChangeText={(text) => { changeAddress(text) }} />
             </View>}
             <TouchableOpacity style={styles.button} onPress={() => { Update() }}>
                 <Text style={styles.buttonTxt}>Update</Text>
